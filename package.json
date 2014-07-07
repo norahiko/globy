@@ -1,0 +1,19 @@
+{
+  "name": "globy",
+  "version": "0.0.0",
+  "description": "New glob library",
+  "main": "lib/globy.js",
+  "scripts": {
+    "test": "mocha -u tdd"
+  },
+  "keywords": [
+    "glob"
+  ],
+  "author": "norahiko",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "mocha": "^1.20.1"
+  }
+}
