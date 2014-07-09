@@ -44,6 +44,11 @@ suite("glob:", function() {
     });
 
 
+    test("/", function() {
+        deepEqual(globy.glob("/"), ["/"]);
+    });
+
+
     test(".", function() {
         deepEqual(globy.glob("."), ["."]);
     });
