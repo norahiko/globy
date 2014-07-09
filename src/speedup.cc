@@ -32,13 +32,12 @@ bool ReaddirImpl(const char* path, Local<Array>& result) {
     int index = 0;
     for(int i = 0; i < size; i++) {
         const char* n = namelist[i]->d_name;
-        if(IsCurrentDir(n)) {
-            continue;
-        }
 
-        Local<String> name = NanNew<String>(n);
+        if(! IsCurrentDir(n)) {
+            Local<String> name = NanNew<String>(n);
+            result->Set(NanNew<Number>(index++), name);
+        }
         free(namelist[i]);
-        result->Set(NanNew<Number>(index++), name);
     }
 
     free(namelist);
