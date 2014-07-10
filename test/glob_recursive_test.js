@@ -108,12 +108,19 @@ suite("glob:", function() {
     });
 
 
-    test("../ender_chest/*/* .length", function() {
-        equal(globy.glob("../ender_chest/*/*").length, 2);
+    test("../ender_chest/**/* (follow)", function() {
+        deepEqual(
+            globy.glob("../ender_chest/**/*"),
+            [
+                "../ender_chest/tools",
+                "../ender_chest/tools/Door",
+                "../ender_chest/tools/Ladder",
+            ]
+        );
     });
 
 
-    test("../ender_chest/**/*", function() {
+    test("../ender_chest/**/* (nofollow)", function() {
         deepEqual(
             globy.glob("../ender_chest/**/*", { nofollow: true }),
             [
@@ -121,4 +128,16 @@ suite("glob:", function() {
             ]
         );
     });
+
+
+    test("../ender_chest/*/* (nofollow)", function() {
+        deepEqual(
+            globy.glob("../ender_chest/*/*", { nofollow: true }),
+            [
+                "../ender_chest/tools/Door",
+                "../ender_chest/tools/Ladder",
+            ]
+        );
+    });
 });
+

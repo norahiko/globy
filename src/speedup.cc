@@ -22,18 +22,9 @@ using namespace v8;
 
 // Type signature
 
-_NAN_METHOD_RETURN_TYPE IsDirectory(_NAN_METHOD_ARGS_TYPE);
-_NAN_METHOD_RETURN_TYPE IsSymbolicLink(_NAN_METHOD_ARGS_TYPE);
-
 bool ReaddirImpl(const char* path, Local<Array>& result);
-bool StatSyncImpl(const char*, bool use_lstat, Local<Object>& result);
 bool ExistsImpl(const char* path);
 bool IsCurrentDir(const char* path);
-
-
-// Template
-
-Persistent<ObjectTemplate> stat_template;
 
 
 #ifdef _MSC_VER
@@ -70,44 +61,22 @@ bool ReaddirImpl(const char* path, Local<Array>& result) {
     return true;
 }
 
-
-bool StatSyncImpl(const char* path, bool use_lstat, Local<Object>& result) {
-    struct stat stat_st;
-    int err;
-    if(use_lstat) {
-        err = lstat(path, &stat_st);
-    } else {
-        err = stat(path, &stat_st);
-    }
-
+bool IsSymbolicLinkImpl(const char* path) {
+    struct stat st;
+    int err = lstat(path, &st);
     if(err) {
         return false;
     }
 
-    result->Set(NanNew<String>("mode"), NanNew<Number>(stat_st.st_mode));
-    return true;
+    return st.st_mode & S_IFLNK;
 }
+
 
 bool ExistsImpl(const char* path) {
-    struct stat stat_st;
-    return stat(path, &stat_st) == 0;
+    struct stat st;
+    return stat(path, &st) == 0;
 }
 
-
-NAN_METHOD(IsDirectory) {
-    NanScope();
-    Local<Object> stat = args.This();
-    int mode = stat->Get(NanNew<String>("mode"))->IntegerValue();
-    NanReturnValue((mode & S_IFDIR) ? NanTrue() : NanFalse());
-}
-
-
-NAN_METHOD(IsSymbolicLink) {
-    NanScope();
-    Local<Object> stat = args.This();
-    int mode = stat->Get(NanNew<String>("mode"))->IntegerValue();
-    NanReturnValue((mode & S_IFLNK) ? NanTrue() : NanFalse());
-}
 
 #endif
 
@@ -138,31 +107,14 @@ NAN_METHOD(ReaddirSyncSafe) {
 }
 
 
-Handle<Value> StatSyncCall(_NAN_METHOD_ARGS, bool use_lstat) {
+NAN_METHOD(IsSymbolicLink) {
+    NanScope();
     assert(args.Length() == 1);
     assert(args[0]->IsString());
 
-    Local<Object> result = stat_template->NewInstance();
     String::Utf8Value path(args[0]);
-
-    bool success = StatSyncImpl(*path, use_lstat, result);
-    if(success) {
-        return result;
-    } else {
-        return NanNull();
-    }
-}
-
-
-NAN_METHOD(StatSyncSafe) {
-    NanScope();
-    NanReturnValue(StatSyncCall(args, false));
-}
-
-
-NAN_METHOD(LstatSyncSafe) {
-    NanScope();
-    NanReturnValue(StatSyncCall(args, true));
+    bool is_sym = IsSymbolicLinkImpl(*path);
+    NanReturnValue(is_sym ? NanTrue() : NanFalse());
 }
 
 
@@ -173,30 +125,21 @@ NAN_METHOD(ExistsSync) {
 
     String::Utf8Value path(args[0]);
     bool exists = ExistsImpl(*path);
-
     NanReturnValue(exists ? NanTrue() : NanFalse());
 }
 
 
 NAN_METHOD(Test) {
     NanScope();
-    Local<Object> stat = stat_template->NewInstance();
-    NanReturnValue(stat);
+    NanReturnValue(Null());
 }
 
 
 void Init(Handle<Object> exports) {
     NanScope();
 
-    Local<ObjectTemplate> templ = NanNew<ObjectTemplate>();
-    templ->Set(NanNew<String>("mode"), NanNew<Number>(0));
-    NODE_SET_METHOD(templ, "isDirectory", IsDirectory);
-    NODE_SET_METHOD(templ, "isSymbolicLink", IsSymbolicLink);
-    NanAssignPersistent(stat_template, templ);
-
     NODE_SET_METHOD(exports, "readdirSyncSafe", ReaddirSyncSafe);
-    NODE_SET_METHOD(exports, "statSyncSafe", StatSyncSafe);
-    NODE_SET_METHOD(exports, "lstatSyncSafe", LstatSyncSafe);
+    NODE_SET_METHOD(exports, "isSymbolicLink", IsSymbolicLink);
     NODE_SET_METHOD(exports, "existsSync", ExistsSync);
     NODE_SET_METHOD(exports, "test", Test);
 }
