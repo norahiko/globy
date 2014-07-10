@@ -3,6 +3,7 @@
 
 var assert = require("chai").assert;
 var globy = require("../lib/globy.js");
+var equal = assert.strictEqual;
 var deepEqual = assert.deepEqual;
 
 suite("glob:", function() {
@@ -102,6 +103,21 @@ suite("glob:", function() {
                 "blocks/SandStone",
                 "blocks/Snow",
                 "blocks/Stone",
+            ]
+        );
+    });
+
+
+    test("../ender_chest/*/* .length", function() {
+        equal(globy.glob("../ender_chest/*/*").length, 2);
+    });
+
+
+    test("../ender_chest/**/*", function() {
+        deepEqual(
+            globy.glob("../ender_chest/**/*", { nofollow: true }),
+            [
+                "../ender_chest/tools",
             ]
         );
     });
