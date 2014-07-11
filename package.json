@@ -4,7 +4,8 @@
   "description": "New glob library",
   "main": "lib/globy.js",
   "scripts": {
-    "test": "mocha -u tdd"
+    "test": "mocha -u tdd",
+    "install": "noe-gyp rebuild || exit 0"
   },
   "keywords": [
     "glob"
