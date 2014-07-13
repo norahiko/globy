@@ -51,12 +51,12 @@ suite("glob nocase:", function() {
 
     test("**/*.{INGOT,GEM} (dot, nocase)", function() {
         deepEqual(
-            globy.glob("**/*.{INGOT,GEM}", opt),
+            globy.glob("**/*.{INGOT,GEM}", opt).sort(),
             [
                 "elements/Gold.ingot",
                 "elements/Iron.ingot",
                 "elements/gems/Emerald.gem",
-            ]
+            ].sort()
         );
     });
 });

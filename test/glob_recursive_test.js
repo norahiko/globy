@@ -1,4 +1,4 @@
-"tuse strict";
+"use strict";
 // jshint unused: false
 
 var assert = require("chai").assert;
@@ -21,7 +21,7 @@ suite("glob:", function() {
 
     test("**/*", function() {
         deepEqual(
-            globy.glob("**/*"),
+            globy.glob("**/*").sort(),
             [
                 "blocks",
                 "blocks/CobbleStone",
@@ -41,14 +41,14 @@ suite("glob:", function() {
                 "tools",
                 "tools/Door",
                 "tools/Ladder",
-            ]
+            ].sort()
         );
     });
 
 
     test("**/* (dot)", function() {
         deepEqual(
-            globy.glob("**/*", { dot: true }),
+            globy.glob("**/*", { dot: true }).sort(),
             [
                 ".hidden_file",
                 ".secret",
@@ -71,7 +71,7 @@ suite("glob:", function() {
                 "tools",
                 "tools/Door",
                 "tools/Ladder",
-            ]
+            ].sort()
         );
     });
 
@@ -103,39 +103,6 @@ suite("glob:", function() {
                 "blocks/SandStone",
                 "blocks/Snow",
                 "blocks/Stone",
-            ]
-        );
-    });
-
-
-    test("../ender_chest/**/* (follow)", function() {
-        deepEqual(
-            globy.glob("../ender_chest/**/*"),
-            [
-                "../ender_chest/tools",
-                "../ender_chest/tools/Door",
-                "../ender_chest/tools/Ladder",
-            ]
-        );
-    });
-
-
-    test("../ender_chest/**/* (nofollow)", function() {
-        deepEqual(
-            globy.glob("../ender_chest/**/*", { nofollow: true }),
-            [
-                "../ender_chest/tools",
-            ]
-        );
-    });
-
-
-    test("../ender_chest/*/* (nofollow)", function() {
-        deepEqual(
-            globy.glob("../ender_chest/*/*", { nofollow: true }),
-            [
-                "../ender_chest/tools/Door",
-                "../ender_chest/tools/Ladder",
             ]
         );
     });

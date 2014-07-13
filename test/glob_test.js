@@ -45,7 +45,8 @@ suite("glob:", function() {
 
 
     test("/", function() {
-        deepEqual(globy.glob("/"), ["/"]);
+        var root = process.platform === "win32" ? "C:/" : "/";
+        deepEqual(globy.glob("/"), [root]);
     });
 
 
