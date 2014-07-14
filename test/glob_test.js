@@ -19,6 +19,11 @@ teardown(function () {
 
 
 suite("glob:", function() {
+    test("<empty string>", function() {
+        deepEqual(globy.glob(""), []);
+    });
+
+
     test("blocks", function() {
         deepEqual(globy.glob("blocks"), ["blocks"]);
     });
