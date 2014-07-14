@@ -1,36 +1,13 @@
 "use strict";
 
+var common = require("./common.js");
+var speedup = common.speedup;
 var assert = require("chai").assert;
-var fs = require("fs");
 var deepEqual = assert.deepEqual;
-
-try {
-    var speedup = require("../build/Release/speedup.node");
-} catch(_) {
-    console.warn("Could not load speedup addon");
-}
-
-
-var sym = "test/ender_chest/tools";
-if(fs.existsSync(sym)) {
-    fs.unlinkSync(sym);
-}
-
-try {
-    fs.symlinkSync("../chest/tools", sym);
-} catch(_) {
-    console.warn("Could not create symbolic link");
-}
 
 
 suite("speedup:", function () {
-    var speedupTest = speedup ? test : test.skip;
-    var existsLink = fs.existsSync("test/ender_chest/tools");
-    var symlinkTest = existsLink ? speedupTest : test.skip;
-
-
-
-    speedupTest("readdirSyncSafe('.')", function() {
+    common.speedupTest("readdirSyncSafe('.')", function() {
         deepEqual(
             speedup.readdirSyncSafe("."),
             [".hidden_file", ".secret", "blocks", "elements", "tools"]
@@ -38,7 +15,7 @@ suite("speedup:", function () {
     });
 
 
-    speedupTest("readdirSyncSafe('not_exists_dir')", function() {
+    common.speedupTest("readdirSyncSafe('not_exists_dir')", function() {
         deepEqual(
             speedup.readdirSyncSafe("not_exists_dir"),
             null
@@ -46,7 +23,7 @@ suite("speedup:", function () {
     });
 
 
-    speedupTest("existsSync", function () {
+    common.speedupTest("existsSync", function () {
         assert.ok(speedup.existsSync("."));
         assert.ok(speedup.existsSync("./"));
         assert.ok(speedup.existsSync("blocks"));
@@ -59,7 +36,9 @@ suite("speedup:", function () {
     });
 
 
-    symlinkTest("isSymbolicLink", function() {
+    var isSymbolicLinkTest = speedup ? common.symlinkTest : test.skip;
+
+    isSymbolicLinkTest("isSymbolicLink", function() {
         assert.ok(speedup.isSymbolicLink("../ender_chest/tools"));
         assert.ok(speedup.isSymbolicLink("../ender_chest/tools/Door"));
 

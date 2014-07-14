@@ -1,16 +1,13 @@
 "use strict";
 
+var common = require("./common.js");
 var assert = require("chai").assert;
 var globy = require("../lib/globy.js");
-var fs = require("fs");
 var deepEqual = assert.deepEqual;
 
 
 suite("glob:", function() {
-    var existsLink = fs.existsSync("test/ender_chest/tools");
-    var symlinkTest = existsLink ? test : test.skip;
-
-    symlinkTest("../ender_chest/**/* (follow)", function() {
+    common.symlinkTest("../ender_chest/**/* (follow)", function() {
         deepEqual(
             globy.glob("../ender_chest/**/*"),
             [
@@ -22,7 +19,7 @@ suite("glob:", function() {
     });
 
 
-    symlinkTest("../ender_chest/**/* (nofollow)", function() {
+    common.symlinkTest("../ender_chest/**/* (nofollow)", function() {
         deepEqual(
             globy.glob("../ender_chest/**/*", { nofollow: true }),
             [
@@ -32,7 +29,7 @@ suite("glob:", function() {
     });
 
 
-    symlinkTest("../ender_chest/*/* (nofollow)", function() {
+    common.symlinkTest("../ender_chest/*/* (nofollow)", function() {
         deepEqual(
             globy.glob("../ender_chest/*/*", { nofollow: true }),
             [
