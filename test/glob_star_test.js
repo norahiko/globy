@@ -115,6 +115,4 @@ suite("glob star:", function() {
             assert.include(dirs, "C:/Users");
         }
     });
-
-
 });

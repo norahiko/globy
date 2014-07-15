@@ -39,10 +39,9 @@ suite("speedup:", function () {
     var isSymbolicLinkTest = speedup ? common.symlinkTest : test.skip;
 
     isSymbolicLinkTest("isSymbolicLink", function() {
-        assert.ok(speedup.isSymbolicLink("../ender_chest/tools"));
-        assert.ok(speedup.isSymbolicLink("../ender_chest/tools/Door"));
+        assert.ok(speedup.isSymbolicLinkSync("../ender_chest/tools"));
 
-        assert.notOk(speedup.isSymbolicLink("../ender_chest"));
-        assert.notOk(speedup.isSymbolicLink("../not_exists_file"));
+        assert.notOk(speedup.isSymbolicLinkSync("../ender_chest"));
+        assert.notOk(speedup.isSymbolicLinkSync("../not_exists_file"));
     });
 });
