@@ -1,7 +1,6 @@
 #include <node.h>
 #include <nan.h>
 #include <stdlib.h>
-#include <iostream>
 
 #ifdef _MSC_VER
 // Windows header
@@ -69,11 +68,11 @@ fail:
 
 
 DWORD GetAttr(Local<String>& path) {
-    String::Value path_raw(path);
-    if(*path_raw == NULL) {
+    String::Value path_value(path);
+    if(*path_value == NULL) {
         return INVALID_FILE_ATTRIBUTES;
     }
-    return GetFileAttributesW((const wchar_t*) *path_raw);
+    return GetFileAttributesW((const wchar_t*) *path_value);
 }
 
 
@@ -94,13 +93,13 @@ bool ExistsImpl(Local<String>& path) {
 
 // Unix system call
 bool ReaddirImpl(Local<String>& path, Local<Array>& result) {
-    String::Utf8Value path_raw(path);
-    if(*path_raw == NULL) {
+    String::Utf8Value path_value(path);
+    if(*path_value == NULL) {
         return false;
     }
 
     struct dirent** namelist;
-    int size = scandir(*path_raw, &namelist, NULL, alphasort);
+    int size = scandir(*path_value, &namelist, NULL, alphasort);
     if(size < 0) {
         return false;
     }
@@ -120,13 +119,13 @@ bool ReaddirImpl(Local<String>& path, Local<Array>& result) {
 
 
 bool IsSymbolicLinkImpl(Local<String>& path) {
-    String::Utf8Value path_raw(path);
-    if(*path_raw == NULL) {
+    String::Utf8Value path_value(path);
+    if(*path_value == NULL) {
         return false;
     }
 
     struct stat st;
-    int err = lstat(*path_raw, &st);
+    int err = lstat(*path_value, &st);
     if(err) {
         return false;
     }
@@ -136,13 +135,13 @@ bool IsSymbolicLinkImpl(Local<String>& path) {
 
 
 bool ExistsImpl(Local<String>& path) {
-    String::Utf8Value path_raw(path);
-    if(*path_raw == NULL) {
+    String::Utf8Value path_value(path);
+    if(*path_value == NULL) {
         return false;
     }
 
     struct stat st;
-    return stat(*path_raw, &st) == 0;
+    return stat(*path_value, &st) == 0;
 }
 
 
@@ -204,18 +203,11 @@ NAN_METHOD(Exists) {
 }
 
 
-NAN_METHOD(Test) {
-    NanScope();
-    NanReturnValue(Null());
-}
-
-
 void Init(Handle<Object> exports) {
     NanScope();
     NODE_SET_METHOD(exports, "readdirSyncSafe", Readdir);
     NODE_SET_METHOD(exports, "isSymbolicLinkSync", IsSymbolicLink);
     NODE_SET_METHOD(exports, "existsSync", Exists);
-    NODE_SET_METHOD(exports, "test", Test);
 }
 
 
