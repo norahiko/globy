@@ -212,7 +212,6 @@ NAN_METHOD(Test) {
 
 void Init(Handle<Object> exports) {
     NanScope();
-
     NODE_SET_METHOD(exports, "readdirSyncSafe", Readdir);
     NODE_SET_METHOD(exports, "isSymbolicLinkSync", IsSymbolicLink);
     NODE_SET_METHOD(exports, "existsSync", Exists);
