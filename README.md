@@ -1,4 +1,4 @@
-globy
+globy [![Build Status](https://travis-ci.org/norahiko/globy.svg?branch=master)](https://travis-ci.org/norahiko/globy)
 =====
 
 New glob library for Node.js. Search fast and exactly.
