@@ -7,23 +7,22 @@
 # include <Windows.h>
 #else
 // Unix header
-
 # include <dirent.h>
 # include <sys/stat.h>
-
 #endif
 
-
 using namespace v8;
-
-// Type signature
-
-bool IsCurrentDir(const wchar_t* path);
-bool IsCurrentDir(const char* path);
 
 
 #ifdef _MSC_VER
 // Windows system call
+
+bool IsCurrentDir(const wchar_t* name) {
+    if(name[0] == L'.') {
+        return name[1] == L'\0' || (name[1] == L'.' && name[2] == L'\0');
+    }
+    return false;
+}
 
 bool ReaddirImpl(Local<String>& path, Local<Array>& result) {
     int len = path->Length();
@@ -52,8 +51,8 @@ bool ReaddirImpl(Local<String>& path, Local<Array>& result) {
     int index = 0;
     do {
         if(! IsCurrentDir(find_data.cFileName)) {
-            Local<String> filename = NanNew<String>((uint16_t*) find_data.cFileName);
-            result->Set(NanNew<Number>(index++), filename);
+            Local<String> filename = NanNew((uint16_t*) find_data.cFileName);
+            result->Set(index++, filename);
         }
     } while(FindNextFileW(handle, &find_data));
 
@@ -66,7 +65,6 @@ fail:
     return false;
 }
 
-
 DWORD GetAttr(Local<String>& path) {
     String::Value path_value(path);
     if(*path_value == NULL) {
@@ -74,7 +72,6 @@ DWORD GetAttr(Local<String>& path) {
     }
     return GetFileAttributesW((const wchar_t*) *path_value);
 }
-
 
 bool IsSymbolicLinkImpl(Local<String>& path) {
     DWORD attr = GetAttr(path);
@@ -84,14 +81,20 @@ bool IsSymbolicLinkImpl(Local<String>& path) {
     return attr & FILE_ATTRIBUTE_REPARSE_POINT;
 }
 
-
 bool ExistsImpl(Local<String>& path) {
     return GetAttr(path) != INVALID_FILE_ATTRIBUTES;
 }
 
 #else
-
 // Unix system call
+
+bool IsCurrentDir(const char* name) {
+    if(name[0] == '.') {
+        return name[1] == '\0' || (name[1] == '.' && name[2] == '\0');
+    }
+    return false;
+}
+
 bool ReaddirImpl(Local<String>& path, Local<Array>& result) {
     String::Utf8Value path_value(path);
     if(*path_value == NULL) {
@@ -107,8 +110,8 @@ bool ReaddirImpl(Local<String>& path, Local<Array>& result) {
     int index = 0;
     for(int i = 0; i < size; i++) {
         if(IsCurrentDir(namelist[i]->d_name) == false) {
-            Local<String> filename = NanNew<String>(namelist[i]->d_name);
-            result->Set(NanNew<Number>(index++), filename);
+            Local<String> filename = NanNew(namelist[i]->d_name);
+            result->Set(index++, filename);
         }
         free(namelist[i]);
     }
@@ -116,7 +119,6 @@ bool ReaddirImpl(Local<String>& path, Local<Array>& result) {
     free(namelist);
     return true;
 }
-
 
 bool IsSymbolicLinkImpl(Local<String>& path) {
     String::Utf8Value path_value(path);
@@ -133,7 +135,6 @@ bool IsSymbolicLinkImpl(Local<String>& path) {
     return st.st_mode & S_IFLNK;
 }
 
-
 bool ExistsImpl(Local<String>& path) {
     String::Utf8Value path_value(path);
     if(*path_value == NULL) {
@@ -144,25 +145,7 @@ bool ExistsImpl(Local<String>& path) {
     return stat(*path_value, &st) == 0;
 }
 
-
 #endif
-
-
-bool IsCurrentDir(const wchar_t* name) {
-    if(name[0] == L'.') {
-        return name[1] == L'\0' || (name[1] == L'.' && name[2] == L'\0');
-    }
-    return false;
-}
-
-
-bool IsCurrentDir(const char* name) {
-    if(name[0] == '.') {
-        return name[1] == '\0' || (name[1] == '.' && name[2] == '\0');
-    }
-    return false;
-}
-
 
 NAN_METHOD(Readdir) {
     NanScope();
@@ -180,7 +163,6 @@ NAN_METHOD(Readdir) {
     }
 }
 
-
 NAN_METHOD(IsSymbolicLink) {
     NanScope();
     assert(args.Length() == 1);
@@ -190,7 +172,6 @@ NAN_METHOD(IsSymbolicLink) {
     bool is_sym = IsSymbolicLinkImpl(path);
     NanReturnValue(is_sym ? NanTrue() : NanFalse());
 }
-
 
 NAN_METHOD(Exists) {
     NanScope();
@@ -202,13 +183,11 @@ NAN_METHOD(Exists) {
     NanReturnValue(exists ? NanTrue() : NanFalse());
 }
 
-
 void Init(Handle<Object> exports) {
     NanScope();
     NODE_SET_METHOD(exports, "readdirSyncSafe", Readdir);
     NODE_SET_METHOD(exports, "isSymbolicLinkSync", IsSymbolicLink);
     NODE_SET_METHOD(exports, "existsSync", Exists);
 }
-
 
 NODE_MODULE(speedup, Init)
