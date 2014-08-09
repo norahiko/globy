@@ -37,7 +37,7 @@
   "homepage": "https://github.com/norahiko/globy",
   "config": {
     "blanket": {
-      "pattern": "lib/globy.js lib/pattern_regex.js",
+      "pattern": "lib/",
       "data-cover-never": "node_modules"
     }
   }
