@@ -1,24 +1,23 @@
-globy [![Build Status](https://travis-ci.org/norahiko/globy.svg?branch=master)](https://travis-ci.org/norahiko/globy)
+globy
 =====
+
+[![Build Status](https://travis-ci.org/norahiko/globy.svg?branch=master)](https://travis-ci.org/norahiko/globy)
+[![Coverage Status](https://coveralls.io/repos/norahiko/globy/badge.png?branch=master)](https://coveralls.io/r/norahiko/globy?branch=master)
 
 New glob library for Node.js. Search fast and exactly.
 
 
 ## Installation
-
 Requires (optional)
 
 * [node-gyp] (https://github.com/TooTallNate/node-gyp)
 
-
 Install
-
 ```sh
 $ npm install globy
 ```
 
 ## Usage
-
 ```js
 var globy = require("globy");
 
@@ -35,7 +34,6 @@ var files = globy.glob("**/*.js", options);
 ## API
 
 ### `globy.glob(pattern, [options])`
-
 Glob search files.
 
 * **returns** {String[]}
