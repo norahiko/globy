@@ -5,7 +5,9 @@
   "main": "lib/globy.js",
   "scripts": {
     "test": "mocha -u tdd",
-    "install": "node-gyp rebuild || exit 0"
+    "install": "node-gyp rebuild || exit 0",
+    "coverage": "mocha -u tdd --require blanket -R html-cov > coverage.html && google-chrome coverage.html",
+    "coveralls": "mocha -u tdd --require blanket -R mocha-lcov-reporter | coveralls"
   },
   "keywords": [
     "glob"
@@ -17,7 +19,10 @@
   },
   "devDependencies": {
     "chai": "^1.9.1",
-    "mocha": "^1.20.1"
+    "mocha": "^1.20.1",
+    "blanket": "^1.1.6",
+    "coveralls": "^2.11.1",
+    "mocha-lcov-reporter": "0.0.1"
   },
   "directories": {
     "test": "test"
@@ -29,5 +34,11 @@
   "bugs": {
     "url": "https://github.com/norahiko/globy/issues"
   },
-  "homepage": "https://github.com/norahiko/globy"
+  "homepage": "https://github.com/norahiko/globy",
+  "config": {
+    "blanket": {
+      "pattern": "lib",
+      "data-cover-never": "node_modules"
+    }
+  }
 }
