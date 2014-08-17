@@ -89,5 +89,13 @@ suite("glob:", function() {
             0
         );
     });
+
+
+    test("cwd option", function() {
+        deepEqual(
+            globy.glob("*", { cwd: "tools" }),
+            ["Door", "Ladder"]
+        );
+    });
 });
 
