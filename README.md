@@ -13,11 +13,13 @@ Requires (optional)
 * [node-gyp] (https://github.com/TooTallNate/node-gyp)
 
 Install
+
 ```sh
 $ npm install globy
 ```
 
 ## Usage
+
 ```js
 var globy = require("globy");
 
