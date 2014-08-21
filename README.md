@@ -1,13 +1,11 @@
-globy
-=====
+# globy
+
 New glob library for Node.js. Search fast and exactly.
 
 [![Build Status](https://travis-ci.org/norahiko/globy.svg?branch=master)](https://travis-ci.org/norahiko/globy)
 [![Coverage Status](https://coveralls.io/repos/norahiko/globy/badge.png?branch=master)](https://coveralls.io/r/norahiko/globy?branch=master)
 
 [![NPM](https://nodei.co/npm/globy.png)](https://nodei.co/npm/globy/)
-
-
 
 
 ## Installation
@@ -39,6 +37,7 @@ var files = globy.glob("**/*.js", options);
 ## API
 
 ### `globy.glob(pattern, [options])`
+
 Glob search files.
 
 * **returns** {String[]}
