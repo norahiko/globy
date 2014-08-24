@@ -1,4 +1,3 @@
-#include <node.h>
 #include <nan.h>
 #include <stdlib.h>
 
@@ -24,7 +23,7 @@ bool IsCurrentDir(const wchar_t* name) {
     return false;
 }
 
-bool ReaddirImpl(Local<String>& path, Local<Array>& result) {
+bool ReaddirSyncSafeImpl(Local<String>& path, Local<Array>& result) {
     int len = path->Length();
     wchar_t* path_buf = new wchar_t[len + 3];
 
@@ -73,7 +72,7 @@ DWORD GetAttr(Local<String>& path) {
     return GetFileAttributesW((const wchar_t*) *path_value);
 }
 
-bool IsSymbolicLinkImpl(Local<String>& path) {
+bool IsSymbolicLinkSyncImpl(Local<String>& path) {
     DWORD attr = GetAttr(path);
     if(attr == INVALID_FILE_ATTRIBUTES) {
         return false;
@@ -81,7 +80,7 @@ bool IsSymbolicLinkImpl(Local<String>& path) {
     return attr & FILE_ATTRIBUTE_REPARSE_POINT;
 }
 
-bool ExistsImpl(Local<String>& path) {
+bool ExistsSyncImpl(Local<String>& path) {
     return GetAttr(path) != INVALID_FILE_ATTRIBUTES;
 }
 
@@ -95,7 +94,7 @@ bool IsCurrentDir(const char* name) {
     return false;
 }
 
-bool ReaddirImpl(Local<String>& path, Local<Array>& result) {
+bool ReaddirSyncSafeImpl(Local<String>& path, Local<Array>& result) {
     String::Utf8Value path_value(path);
     if(*path_value == NULL) {
         return false;
@@ -120,7 +119,7 @@ bool ReaddirImpl(Local<String>& path, Local<Array>& result) {
     return true;
 }
 
-bool IsSymbolicLinkImpl(Local<String>& path) {
+bool IsSymbolicLinkSyncImpl(Local<String>& path) {
     String::Utf8Value path_value(path);
     if(*path_value == NULL) {
         return false;
@@ -135,7 +134,7 @@ bool IsSymbolicLinkImpl(Local<String>& path) {
     return st.st_mode & S_IFLNK;
 }
 
-bool ExistsImpl(Local<String>& path) {
+bool ExistsSyncImpl(Local<String>& path) {
     String::Utf8Value path_value(path);
     if(*path_value == NULL) {
         return false;
@@ -147,14 +146,14 @@ bool ExistsImpl(Local<String>& path) {
 
 #endif
 
-NAN_METHOD(Readdir) {
+NAN_METHOD(ReaddirSyncSafe) {
     NanScope();
     assert(args.Length() == 1);
     assert(args[0]->IsString());
 
     Local<Array> result = NanNew<Array>();
     Local<String> path = args[0]->ToString();
-    bool success = ReaddirImpl(path, result);
+    bool success = ReaddirSyncSafeImpl(path, result);
 
     if(success) {
         NanReturnValue(result);
@@ -163,31 +162,30 @@ NAN_METHOD(Readdir) {
     }
 }
 
-NAN_METHOD(IsSymbolicLink) {
+NAN_METHOD(IsSymbolicLinkSync) {
     NanScope();
     assert(args.Length() == 1);
     assert(args[0]->IsString());
 
     Local<String> path = args[0]->ToString();
-    bool is_sym = IsSymbolicLinkImpl(path);
+    bool is_sym = IsSymbolicLinkSyncImpl(path);
     NanReturnValue(is_sym ? NanTrue() : NanFalse());
 }
 
-NAN_METHOD(Exists) {
+NAN_METHOD(ExistsSync) {
     NanScope();
     assert(args.Length() == 1);
     assert(args[0]->IsString());
 
     Local<String> path = args[0]->ToString();
-    bool exists = ExistsImpl(path);
+    bool exists = ExistsSyncImpl(path);
     NanReturnValue(exists ? NanTrue() : NanFalse());
 }
 
 void Init(Handle<Object> exports) {
-    NanScope();
-    NODE_SET_METHOD(exports, "readdirSyncSafe", Readdir);
-    NODE_SET_METHOD(exports, "isSymbolicLinkSync", IsSymbolicLink);
-    NODE_SET_METHOD(exports, "existsSync", Exists);
+    NODE_SET_METHOD(exports, "readdirSyncSafe", ReaddirSyncSafe);
+    NODE_SET_METHOD(exports, "isSymbolicLinkSync", IsSymbolicLinkSync);
+    NODE_SET_METHOD(exports, "existsSync", ExistsSync);
 }
 
 NODE_MODULE(speedup, Init)
