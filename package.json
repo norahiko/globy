@@ -1,6 +1,6 @@
 {
   "name": "globy",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "New glob library",
   "main": "lib/globy.js",
   "scripts": {
