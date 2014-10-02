@@ -107,19 +107,24 @@ suite("fnmatch:", function() {
 
 
     test("**", function() {
-        ok("**", "foo/bar/baz");
-        ok("**", "foo/bar/");
-        ok("**", "/usr/lib/node");
-        ok("/**", "/usr/lib/node");
+        ok("**/*", "foo/bar/baz");
+        ok("**/", "/bar/");
+        ok("**/", "foo/bar/");
+        ok("**", "foo");
+        ok("/**", "/usr");
+        ok("**/txt", "txt");
         ok("**/*.js", "lib/glob.js");
         ok("**/*.js", "lib/node_modules/glob/lib/glob.js");
+        ok("dir/**", "dir/file");
         ok("dir/**/*.js", "dir/foo/bar/baz/script.js");
         ok("**/lib", "/lib");
         ok("**/cat", "animal/mammal/feline/cat");
-        ok("**/mammal/**", "animal/mammal/feline/cat");
+        ok("**/mammal/**/*", "animal/mammal/feline/cat");
 
+        notOk("**", "foo/bar");
         notOk("**/dir", "");
         notOk("dir/**", "dir");
+        notOk("dir/**", "dir/path/to/file");
         notOk("/**", "not/root");
         notOk("**/lib", "foo/bar/baz/lib/foo");
         notOk("**/lib/**", "foo/_lib_/baz");
